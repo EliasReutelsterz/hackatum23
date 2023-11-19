@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+{% block title %}Home{% endblock %}
+{% block head %}
+{{ super() }}
+<style>
+  * {
+    box-sizing: border-box;
+  }
+
+  .important {
+    color: #336699;
+  }
+</style>
+{% endblock %}
+{% block content %}
+<body class=" h-full w-full m-0 p-0" style="background-image: url(../static/background_home.png); 
+background-size:cover; background-repeat: no-repeat; background-position:center ;">
+  <div class="text-center max-w-2xl mx-auto pt-10 mt-7">
+    <img src="../static/trace-2.svg" alt="logo" class="w-1/2 mx-auto">
+    <h1 class="text-4xl font-bold text-gray-900 mb-4 pt-10">Welcome to your custom Hello Fresh recipe experience!</h1>
+    <p class="text-lg text-gray-700 mb-4">
+    <div class="pb-4">
+      We want to provide the best cooking and dining experience for you and your loved ones.
+      Therefore, we need to know a little bit about you and your personal preferences
+      in order to tailor the perfect recipes just for you!
+    </div>
+    <div class="pb-8 font-semibold">
+      Sounds good? Let's get started!
+    </div>
+    </p>
+    <div class="pb-6">
+      <a href="{{ request.url_for('dietary-restrictions') }}"
+        class="bg-green-500 hover:bg-green-700 text-white font-bold py-3 px-6 rounded"
+        style="background-color: rgb(53,120,75);">
+        Start here
+      </a>
+    </div>
+  </div>
+</body>
+{% endblock %}

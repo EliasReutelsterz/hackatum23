@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>{% block title %}{% endblock %}</title>
+    <!-- Include Tailwind CSS -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.polyfills.min.js"></script>
+    <link href="https://cdn.jsdelivr.net/npm/@yaireo/tagify/dist/tagify.css" rel="stylesheet" type="text/css" />
+    <link rel="icon" href="../static/favicon.ico" type="image/x-icon">
+</head>
+
+<body class="m-0 flex flex-col min-h-screen">
+    <nav class="flex items-center justify-between flex-wrap bg-white pt-2 pr-6 pl-6 pb-3 text-gray-900">
+        <div class="flex items-center flex-shrink-0 mr-6">
+            <div class="flex items-center flex-shrink-0 mr-10 ml-10">
+                <a href="/">
+                    <img src="../static/fruit_icon.jpeg" alt="Logo" class="h-8 w-auto">
+                </a>
+            </div>
+        </div>
+        <div class="w-full block flex-grow lg:flex lg:items-center lg:w-auto">
+            <div class="text-sm lg:flex-grow">
+                <div class="group inline-block">
+                    <button
+                        class="px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-600 focus:ring-white"
+                        style="hover:bg-rgb(217, 247, 160);">
+                        Cooking boxes
+                    </button>
+                    <div class="absolute left-0 w-full mt-2 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <!-- Dropdown items go here -->
+                    </div>
+                </div>
+                <div class="group inline-block">
+                    <button
+                        class="px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-600 focus:ring-white">
+                        This is how it works
+                    </button>
+                    <div class="absolute left-0 w-full mt-2 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <!-- Dropdown items go here -->
+                    </div>
+                </div>
+                <div class="group inline-block">
+                    <button
+                        class="px-4 py-2 mt-2 text-sm font-semibold text-gray-900 rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-600 focus:ring-white"
+                        style="hover:bg-rgb(217, 247, 160);">
+                        Recipes
+                    </button>
+                    <div class="absolute left-0 w-full mt-2 origin-top-right rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 focus:outline-none z-10"
+                        role="menu" aria-orientation="vertical" aria-labelledby="menu-button" tabindex="-1">
+                        <!-- Dropdown items go here -->
+                    </div>
+                </div>
+            </div>
+            <div class="group inline-block ml-auto flex items-center">
+                <button
+                    class="px-8 py-1 text-m font-semibold text-green-700 border-green-700 border bg-white rounded-lg hover:bg-green-200 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-offset-green-600 focus:ring-white">
+                    Logout
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <main class="flex-grow">
+        <div class="container mx-auto">
+            {% block content %}{% endblock %}
+        </div>
+    </main>
+
+    <footer class="bg-gray-100 text-green  text-center p-4 mt-6" style="color: rgb(53, 120, 75);">
+        © 2023
+    </footer>
+</body>
+
+</html>

@@ -1,0 +1,168 @@
+{% extends "base.html" %}
+
+{% block title %}Dietary Restrictions{% endblock %}
+{% block content %}
+<style>
+    .active {
+        background-color: rgb(217, 247, 160);
+        color: darkslategray;
+    }
+
+    .inactive {
+        background-color: white;
+        color: gray;
+    }
+
+    .tagify__tag {
+        background-color: #e0e7ff;
+        border-color: #a5b4fc;
+        color: rgb(53, 120, 75);
+    }
+
+    .tagify__tag__removeBtn {
+        color: rgb(53, 120, 75);
+    }
+
+    .tagify__tag__removeBtn:hover {
+        background-color: #a5b4fc;
+        color: #fff;
+    }
+</style>
+
+<h1 class="text-2xl font-bold mt-4 mb-2">Dietary Restrictions</h1>
+
+<div class="flex items-center mb-4">
+    <img src="../static/numbers/one.png" title="number icons" width="30" height="30">
+    <h1 class="text-lg font-bold text-gray-900 ml-4">Select your allergies: </h1>
+</div>
+<div class="flex flex-col items-center">
+    <div class="p-4 border-2 rounded mb-1 w-full" style="border-color: rgb(217,247,160);">
+        <div class="flex flex-wrap justify-center">
+            {% for button in allergy_buttons %}
+            <button id="{{ button.id }}"
+                class="inactive m-4 py-2 px-4 text-m border-2 border-green-700 hover:bg-gray-100 rounded"
+                onclick="toggleButton('{{ button.id }}')">
+                {{ button.name }}
+            </button>
+            {% endfor %}
+        </div>
+    </div>
+
+    <div class="mt-1 pb-8 w-full">
+        <div class="flex items-center mb-4 mt-4">
+            <img src="../static/numbers/two.png" title="number icons" width="30" height="30">
+            <h1 class="text-lg font-bold text-gray-500 ml-4"><u>Optional:</u> Add additional allergies <em>or</em> other
+                ingredients you simply don't like </h1>
+        </div>
+        <div class="p-4 border-2 rounded w-full" style="border-color: rgb(217,247,160);">
+            <label for="other-allergies" class="block text-m font-semibold text-gray-700 mb-3">
+                Simply type a word into this textfield and hit <em>ENTER</em>! (You can add multiple ones😎)
+            </label>
+            <input type="text" id="other-allergies" name="other-allergies"
+                class="mt-1 block w-full py-3 px-9 text-lg border border-blue-700 rounded-md shadow-sm focus:ring-green-900 focus:ring-green-900 focus:border-green-900 sm:text-sm">
+        </div>
+    </div>
+</div>
+
+<h1 class="text-2xl font-bold mb-2">Kitchen Equipment</h1>
+<div class="mt-1 pb-8 w-full">
+    <div class="flex items-center mb-4">
+        <img src="../static/numbers/three.png" title="number icons" width="30" height="30">
+        <h1 class="text-lg font-bold text-gray-900 ml-4">Select the kitchen equipment, that you have available in
+            your kitchen!</h1>
+    </div>
+    <div class="p-4 border-2 rounded w-full" style="border-color: rgb(217,247,160);">
+        <div class="flex flex-col items-center">
+            <div class="flex flex-wrap justify-center">
+                {% for button in utensils_buttons %}
+                <button id="{{ button.id }}"
+                    class="inactive m-4 py-2 px-4 text-m border-2 border-green-700 hover:bg-gray-100 rounded"
+                    onclick="toggleButton('{{ button.id }}')">
+                    {{ button.name }}
+                </button>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="flex items-center justify-center mb-1">
+    <button type="button" id="submit-button"
+        class="mt-3 inline-block bg-green-700 hover:bg-green-700 text-white font-bold py-2 px-4 rounded">
+        Continue
+    </button>
+</div>
+
+<script>
+    var input = document.querySelector('input[name=other-allergies]');
+    var allergy_data = {};
+    var utensils_data = {};
+    var tagify = new Tagify(input, {
+        whitelist: [],
+        dropdown: {
+            maxItems: 5,
+            classname: "tags-look",
+            enabled: 0,
+            closeOnSelect: false
+        }
+    });
+
+    document.getElementById('submit-button').addEventListener('click', function () {
+        var data = {};
+
+        //get the values of the other-allergies input field
+        var other_allergies = tagify.value.map(function (tag) {
+            return tag.value;
+        });
+
+        var allergy_list = Object.values(allergy_data).concat(other_allergies);
+        var utensils_list = Object.values(utensils_data);
+        var jsonData = JSON.stringify(
+            {
+                allergy: allergy_list,
+                utensils: utensils_list
+            }
+        );
+        fetch('/dietary-restrictions/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: jsonData
+        }).then(function (response) {
+            if (response.ok) {
+                window.location.href = '/personal-preferences';
+            } else {
+                console.error('POST request failed');
+            }
+        }).catch(function (error) {
+            console.error('Error:', error);
+        });
+    });
+
+    function toggleButton(id) {
+        const button = document.getElementById(id);
+        button.classList.toggle('active');
+        button.classList.toggle('inactive');
+        // Add the name of the button to the data object
+        if (button.classList.contains('active')) {
+            // if id first character is 1 then add button text to allergy_data else add to utensils_data
+            if (id.charAt(0) == 1) {
+                allergy_data[id] = button.innerText;
+            }
+            else {
+                utensils_data[id] = button.innerText;
+            }
+        } else {
+            if (id.charAt(0) == 1) {
+                delete allergy_data[id];
+            }
+            else {
+                delete utensils_data[id];
+            }
+        }
+
+    }
+</script>
+
+{% endblock %}

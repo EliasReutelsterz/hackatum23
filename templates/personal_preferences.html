@@ -1,0 +1,226 @@
+{% extends "base.html" %}
+{% block title %}Personal Preferences{% endblock %}
+{% block content %}
+<div class="flex flex-row mb-8 mt-4 justify-between">
+    <div class="flex flex-col">
+        <h1 class="text-4xl font-bold mb-3 ">Personal Preferences</h1>
+        <p class="mb-4 text-xl text-gray-700">Pick your favorite dish to cook!</p>
+    </div>
+
+    <div class="w-72 self-center">
+        <div class="flex justify-between mb-1">
+            <span class="text-base font-medium text-green-900 dark:text-white">Progress</span>
+            <span id="progress-text" class="text-sm font-medium text-green-900 dark:text-white">0/10</span>
+        </div>
+
+        <div class="w-full bg-gray-200 rounded-full h-2.5 dark:bg-gray-700">
+            <div id="progress-percentage" class="bg-green-900 h-2.5 rounded-full" style="width: 0%"></div>
+        </div>
+    </div>
+</div>
+
+<div class="flex flex-row">
+    {% for recipe in recipes %}
+    {% set outer_index = loop.index0 %}
+    <div id="recipe-{{ loop.index0 }}" data-id="{{ recipe['ID'] }}"
+        class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden w-72 m-4 hover:shadow-xl transition-shadow duration-400 ease-in cursor-pointer transform hover:-translate-y-1">
+        <div class="flex-col h-full justify-between items-end">
+            <!--Image-->
+            <div class="md:flex-shrink-0">
+                <img class="h-48 w-full object-cover" id="image-link-{{ loop.index0 }}" src="{{ recipe['ImageLink'] }}">
+            </div>
+            <div class="p-8 w-full h-28">
+                <div class="uppercase tracking-wide text-sm text-black-500 font-semibold" id="name-{{ loop.index0 }}">{{
+                    recipe["Name"] }}</div>
+                <p class="mt-1 text-gray-500" id="headline-{{ loop.index0 }}">{{ recipe["Headline"] }}</p>
+            </div>
+            <div class="pl-8 pr-8 pt-5 pb-5 w-full align-end justify-self-end grow mt-auto">
+                <div class="flex flex-row justify-between content-center items-center">
+                    <!--Difficulty rating-->
+                    <div class="flex flex-row gap-x-2 mt-5">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="w-5 h-5 ">
+                            <path
+                                d="M15.5 2A1.5 1.5 0 0014 3.5v13a1.5 1.5 0 001.5 1.5h1a1.5 1.5 0 001.5-1.5v-13A1.5 1.5 0 0016.5 2h-1zM9.5 6A1.5 1.5 0 008 7.5v9A1.5 1.5 0 009.5 18h1a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0010.5 6h-1zM3.5 10A1.5 1.5 0 002 11.5v5A1.5 1.5 0 003.5 18h1A1.5 1.5 0 006 16.5v-5A1.5 1.5 0 004.5 10h-1z" />
+                        </svg>
+
+                        <!-- {% for i in range(0,recipe["Difficulty"]) %}
+                        <div class="w-4 h-4 bg-blue-500 rounded-full">
+                        </div>
+                        {% endfor %} -->
+
+                        <!-- {% for i in range(recipe["Difficulty"],3) %}
+                        <div class="w-4 h-4 border-2 border-blue-500 rounded-full">
+                        </div>
+                        {% endfor %} -->
+
+                        {% for i in range(0,3) %}
+                        <div id="difficutly-{{ outer_index }}-{{ i }}"
+                            class="w-4 h-4 border-2 border-green-900 rounded-full {% if loop.index <= recipe['Difficulty'] %}bg-green-900{% endif %}">
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!--Time rating-->
+                    <p class="text-black-400 font-semibold flex items-center self-end">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="w-5 h-5 mr-1">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span id="totaltime-{{ loop.index0 }}">{{ recipe["TotalTime"] }}m</span>
+                    </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    var cards = document.querySelectorAll('[id ^= "recipe-"]');
+    var refreshCounter = 0;
+    let maxRefresh = 10;
+    var audioEffect = new Audio("{{ url_for('static', path='/sound.mp3') }}")
+    audioEffect.volume = 0.1;
+
+    // Add an event listener to each card
+    cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+            cardClicked(event.currentTarget.id);
+        });
+    });
+
+    function cardClicked(id) {
+        console.log("Current refresh counter", refreshCounter);
+        if (refreshCounter == maxRefresh) {
+            console.log("Reached maximum refresh counter")
+            return;
+        } else {
+            refreshCounter++;
+            updateProgressBar();
+            rippleEffect(event);
+            audioEffect.play();
+            refreshInformation();
+            logChoice(id);
+        }
+    }
+
+    function refreshInformation() {
+        // Get the information from the server
+        fetch('/recipes/draw')
+            .then(response => response.json())
+            .then(data => {
+                // Update the information on the page
+                for (var i = 0; i < data.length; i++) {
+                    //Update the id
+                    document.getElementById("recipe-" + i).dataset.id = data[i]["ID"]
+                    // Update the image
+                    document.getElementById("image-link-" + i).src = data[i]["ImageLink"]
+                    // Update the name
+                    document.getElementById("name-" + i).innerHTML = data[i]["Name"]
+                    // Update the headline
+                    document.getElementById("headline-" + i).innerHTML = data[i]["Headline"]
+                    // Update the difficulty
+                    for (var j = 0; j < 3; j++) {
+                        if (j < data[i]["Difficulty"]) {
+                            document.getElementById("difficutly-" + i + "-" + j).classList.add("bg-green-900")
+                        } else {
+                            document.getElementById("difficutly-" + i + "-" + j).classList.remove("bg-green-900")
+                        }
+                    }
+                    // Update the total time
+                    document.getElementById("totaltime-" + i).innerHTML = data[i]["TotalTime"] + "m"
+                }
+            });
+    }
+
+    function logChoice(id) {
+        console.log("Logging choice", id);
+        //Get data id
+        var winnerId = document.getElementById(id).dataset.id;
+        // Get winner index from id
+        var winnerIndex = id.split("-")[1];
+        // Get ids of other cards
+        var otherIds = [];
+        for (var i = 0; i < cards.length; i++) {
+            if (i != winnerIndex) {
+                otherIds.push(cards[i].dataset.id);
+            }
+        }
+        console.log("winnerId", winnerId);
+        console.log("otherIds", otherIds);
+
+        fetch('/personal-preferences/log', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+                winner: winnerId,
+                loser: otherIds
+            })
+        })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Success:', data);
+                if (refreshCounter == maxRefresh) {
+                    window.location.href = "/recipes";
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+    }
+
+    function updateProgressBar() {
+        // Get ID of the progress bar
+        var progressBar = document.getElementById("progress-percentage");
+        var progressText = document.getElementById("progress-text");
+        // Get the current progress
+        var progressPercentage = (refreshCounter / maxRefresh) * 100;
+        // Update the progress bar
+        progressBar.style.width = progressPercentage + "%";
+        // Update the progress text
+        progressText.innerHTML = (refreshCounter) + "/" + (maxRefresh);
+    }
+
+    function rippleEffect(event) {
+        const btn = event.currentTarget;
+
+        const circle = document.createElement("span");
+        const diameter = Math.max(btn.clientWidth, btn.clientHeight);
+        const radius = diameter / 2;
+
+        circle.style.width = circle.style.height = `${diameter}px`;
+        circle.style.left = `${event.clientX - (btn.offsetLeft + radius)}px`;
+        circle.style.top = `${event.clientY - (btn.offsetTop + radius)}px`;
+        circle.classList.add("ripple");
+
+        const ripple = btn.getElementsByClassName("ripple")[0];
+
+        if (ripple) {
+            ripple.remove();
+        }
+
+        btn.appendChild(circle);
+    }
+</script>
+<style>
+    span.ripple {
+        position: absolute;
+        border-radius: 50%;
+        transform: scale(0);
+        animation: ripple 500ms linear;
+        background-color: #067a46;
+    }
+
+    @keyframes ripple {
+        to {
+            transform: scale(4);
+            opacity: 0;
+        }
+    }
+</style>
+{% endblock %}

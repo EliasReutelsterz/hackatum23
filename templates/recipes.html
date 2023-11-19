@@ -1,0 +1,100 @@
+{% extends "base.html" %}
+{% block title %}Recipes{% endblock %}
+{% block content %}
+<h1 class="text-2xl font-bold mt-5 mb-5">🪄 Our recommendations for you</h1>
+<!-- <p class="text-green-500">Nice! Here are some recipes selected based on your preferences:</p> -->
+
+<div class="grid grid-cols-3 gap-4 gap-y-8">
+    {% for recipe in recipes %}
+
+    <div id="recipe-{{ loop.index0 }}" data-id="{{ recipe['ID'] }}"
+        class="max-w-md mx-auto bg-white rounded-xl shadow-md overflow-hidden w-96">
+        <div class="flex-col h-full justify-between items-end">
+            <!--Image-->
+            <div class="md:flex-shrink-0">
+                <img class="h-48 w-full object-cover" id="image-link-{{ loop.index0 }}" src="{{ recipe['ImageLink'] }}">
+            </div>
+            <div class="flex flex-row justify-between p-8">
+                <div class="w-full h-16 basis-1/2">
+                    <div class="uppercase tracking-wide text-sm text-black-500 font-semibold"
+                        id="name-{{ loop.index0 }}">{{
+                        recipe["Name"] }}</div>
+                    <p class="mt-1 text-gray-500" id="headline-{{ loop.index0 }}">{{ recipe["Headline"] }}</p>
+                </div>
+                <div class="flex flex-col justify-between content-center items-center h-16 mt-4 ml-5">
+                    <!--Difficulty rating-->
+                    <div class="flex flex-row gap-x-2">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="w-5 h-5 ">
+                            <path
+                                d="M15.5 2A1.5 1.5 0 0014 3.5v13a1.5 1.5 0 001.5 1.5h1a1.5 1.5 0 001.5-1.5v-13A1.5 1.5 0 0016.5 2h-1zM9.5 6A1.5 1.5 0 008 7.5v9A1.5 1.5 0 009.5 18h1a1.5 1.5 0 001.5-1.5v-9A1.5 1.5 0 0010.5 6h-1zM3.5 10A1.5 1.5 0 002 11.5v5A1.5 1.5 0 003.5 18h1A1.5 1.5 0 006 16.5v-5A1.5 1.5 0 004.5 10h-1z" />
+                        </svg>
+
+                        {% for i in range(0,3) %}
+                        <div id="difficutly-{{ outer_index }}-{{ i }}"
+                            class="w-4 h-4 border-2 border-green-900 rounded-full {% if loop.index <= recipe['Difficulty'] %}bg-green-900{% endif %}">
+                        </div>
+                        {% endfor %}
+                    </div>
+
+                    <!--Time rating-->
+                    <p class="text-black-400 font-semibold flex items-center self-end">
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor"
+                            class="w-5 h-5 mr-1">
+                            <path fill-rule="evenodd"
+                                d="M10 18a8 8 0 100-16 8 8 0 000 16zm.75-13a.75.75 0 00-1.5 0v5c0 .414.336.75.75.75h4a.75.75 0 000-1.5h-3.25V5z"
+                                clip-rule="evenodd" />
+                        </svg>
+                        <span id="totaltime-{{ loop.index0 }}">{{ recipe["TotalTime"] }}m</span>
+                    </p>
+                </div>
+
+            </div>
+            <div class="flex flex-row justify-around p-3 pb-5">
+                <button class="flex items-center justify-center border-2 hover:bg-gray-200 text-black font-bold py-2 px-4 rounded-md w-32 h-10 mt-5"
+                    id="recipe-customize-button-{{ loop.index0 }}">Customize</button>
+                <button class="bg-green-700 hover:bg-green-900 text-white font-bold py-2 px-4 rounded-md w-32 h-10 mt-5"
+                    id="recipe-add-button-{{ loop.index0 }}">Add to Box</button>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+    var cards = document.querySelectorAll('[id ^= "recipe-add-button-"]');
+    // Add an event listener to each card
+    cards.forEach(function (card) {
+        card.addEventListener('click', function () {
+            btnClicked(event.currentTarget.id);
+        });
+    });
+
+    // Loop over first three buttons
+    for (var i = 0; i < 3; i++) {
+        var btn = document.getElementById("recipe-add-button-" + i);
+        btn.innerHTML = "Added!";
+        btn.classList.remove("bg-green-700", "text-white");
+        btn.classList.add("border-2", "border-green-700", "text-black");
+    }
+
+    function btnClicked(id) {
+        var btn = document.getElementById(id);
+        // Get btn text
+        var btnText = btn.innerHTML;
+        if (btnText == "Add to Box") {
+            btn.innerHTML = "Added!";
+            btn.classList.remove("bg-green-700", "text-white");
+            btn.classList.add("border-2", "border-green-700", "text-black");
+        } else {
+            btn.innerHTML = "Add to Box";
+            btn.classList.remove("border-2", "border-green-700", "text-black");
+            btn.classList.add("bg-green-700", "text-white");
+        }
+    }
+
+
+
+</script>
+
+{% endblock %}
