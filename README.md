@@ -11,6 +11,7 @@ pip install -r requirements.txt
 ## Run the application:
 run in /Enze1/: < uvicorn main:app --reload --port 8000 >
 
+The Webapp will be available on http://localhost:8000
 
 ## Webapp Preview
 <p float="left">
